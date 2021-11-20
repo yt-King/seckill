@@ -93,6 +93,16 @@ public class SysUser implements Serializable {
     private String status;
 
     /**
+     * 是否失信，0:否，1:是
+     */
+    private Boolean isBlack;
+
+    /**
+     * 逻辑删除，0:否，1:是
+     */
+    private Boolean isDelete;
+
+    /**
      * 是否管理员，0:否，1:是
      */
     private Boolean isLeader;
