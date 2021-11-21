@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 
+import com.yt.seckill.validator.IsIdCard;
+import com.yt.seckill.validator.IsMobile;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -40,8 +42,13 @@ public class SysUser implements Serializable {
      */
     @NotNull(message = "姓名不能为空")
     private String name;
-    @NotNull(message = "账号不能为空")
-    private String userName;
+    /**
+     * 通过手机号注册
+     */
+    @NotNull(message = "手机号不能为空")
+    @IsMobile
+    private String tel;
+
     @NotNull(message = "密码不能为空")
     private String passWord;
 
@@ -49,6 +56,7 @@ public class SysUser implements Serializable {
      * 身份证号
      */
     @NotNull(message = "身份证号不能为空")
+    @IsIdCard
     private String idCard;
 
     /**
@@ -68,23 +76,22 @@ public class SysUser implements Serializable {
 
     /**
      * 用户类型
-     * ①企业法人；　
-     * ②企业法人内部单位核算的单位；　　
-     * ③管理财政预算资金和预算外资金的财政部门；　④实行财政管理的行政机关、事业单位；　　
-     * ⑤县级（含）以上军队、武警单位；　　
-     * ⑥外国驻华机构；　　
-     * ⑦社会团体；　　
-     * ⑧单位附属的食堂、招待所、幼儿园；　　
-     * ⑨外地常设机构；　　
+     * ①企业法人；
+     * ②企业法人内部单位核算的单位；
+     * ③管理财政预算资金和预算外资金的财政部门；　④实行财政管理的行政机关、事业单位；
+     * ⑤县级（含）以上军队、武警单位；
+     * ⑥外国驻华机构；
+     * ⑦社会团体；
+     * ⑧单位附属的食堂、招待所、幼儿园；
+     * ⑨外地常设机构；
      * ⑩私营企业、个体经营承包户和个人。
      */
     private String userType;
 
     /**
-     * 联系电话
+     * 所在省份
      */
-    @NotNull(message = "联系电话不能为空")
-    private String tel;
+    private String address;
 
 
     /**

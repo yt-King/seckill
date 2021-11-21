@@ -4,6 +4,18 @@ spring:
     url: jdbc:mysql://localhost:3306/seckill?useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: root
     password: 123
+
+  redis:
+    database: 0
+    host: 47.96.179.217
+    port: 6666
+    jedis.pool.max-idle: 100
+    jedis.pool.max-wait: -1ms
+    jedis.pool.min-idle: 2
+    timeout: 2000ms
+
 mybatis-plus:
   configuration:
+    #mysql语句打印
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+

@@ -1,6 +1,7 @@
 package com.yt.seckill.controller;
 
 
+import com.yt.seckill.entity.ParamUserDto;
 import com.yt.seckill.entity.SysUser;
 import com.yt.seckill.service.impl.SysUserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author jobob
@@ -29,13 +32,24 @@ import java.util.Map;
 public class SysUserController {
     @Autowired
     private SysUserServiceImpl sysUserService;
+
     @PostMapping("/reg")
-    public Map insert(@RequestBody @Valid SysUser entity, BindingResult bindingResult)  {
-        if(bindingResult.hasErrors()){
-            Map map =new HashMap();
-            map.put("msg",bindingResult.getFieldError().getDefaultMessage());
+    public Map insert(@RequestBody @Valid SysUser entity, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map map = new HashMap();
+            map.put("msg", bindingResult.getFieldError().getDefaultMessage());
             return map;
         }
         return sysUserService.insertUser(entity);
+    }
+
+    @PostMapping("/login")
+    public Map login(@RequestBody @Valid ParamUserDto entity, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+        if (bindingResult.hasErrors()) {
+            Map map = new HashMap();
+            map.put("msg", bindingResult.getFieldError().getDefaultMessage());
+            return map;
+        }
+        return sysUserService.login(entity,request,response);
     }
 }

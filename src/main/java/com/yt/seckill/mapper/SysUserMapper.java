@@ -14,5 +14,10 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface SysUserMapper extends BaseMapper<SysUser> {
+    //数据插入
     int insert(SysUser entity);
+    //根据电话号码查询数量
+    int selectByTel(String tel);
+    //根据电话号码查询实体信息
+    SysUser selectAllByTel(String tel);
 }

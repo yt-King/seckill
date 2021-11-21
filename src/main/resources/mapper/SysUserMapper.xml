@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yt.seckill.mapper.SysUserMapper">
-
+    <select id="selectByTel" resultType="Integer">
+        SELECT COUNT(*)
+        FROM sys_user
+        WHERE tel = #{tel}
+          and is_delete = 0
+    </select>
+    <select id="selectAllByTel" resultType="com.yt.seckill.entity.SysUser">
+        SELECT *
+        FROM sys_user
+        WHERE tel = #{tel}
+          and is_delete = 0 LIMIT 1
+    </select>
 </mapper>
