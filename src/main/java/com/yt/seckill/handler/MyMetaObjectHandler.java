@@ -10,7 +10,7 @@ import java.util.Date;
 /**
  * @author 应涛
  * @date 2021/11/20
- * @function：
+ * @function：自动填充字段
  */
 @Slf4j
 @Component

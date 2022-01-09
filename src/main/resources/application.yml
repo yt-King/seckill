@@ -6,8 +6,8 @@ spring:
     password: 123
   redis:
     database: 0
-    host: 47.96.179.217
-    port: 6666
+    host: 150.158.28.238
+    port: 6379
     jedis.pool.max-idle: 100
     jedis.pool.max-wait: -1ms
     jedis.pool.min-idle: 2
@@ -23,3 +23,5 @@ management:
   endpoint:
     health:
       show-details: always
+
+

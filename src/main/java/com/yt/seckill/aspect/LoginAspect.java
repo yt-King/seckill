@@ -33,7 +33,7 @@ public class LoginAspect {
     @Autowired
     RedisTemplate redisTemplate;
     //定义一个切面,注意这里将用户操作这块的排除了,因为这里包含用户登陆登出,不需要校验.
-    @Pointcut("execution(public * com.yt.seckill.controller.SysUserController.*(..))")
+    @Pointcut("execution(public * com.yt.seckill.controller.MyControllerAdvice.*(..))")
     public void verify() {
     }
 
