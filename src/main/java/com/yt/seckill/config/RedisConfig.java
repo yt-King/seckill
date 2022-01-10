@@ -10,7 +10,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 /**
  * @author 应涛
  * @date 2021/11/21
- * @function：
+ * @function：redis配置类，实现序列化
  */
 @Configuration
 public class RedisConfig {
@@ -18,6 +18,7 @@ public class RedisConfig {
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory){
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        //对redis进行相应的配置,使得redis存储时可以直观显示
         //key序列化
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         //value序列化

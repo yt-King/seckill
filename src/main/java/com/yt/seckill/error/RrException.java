@@ -2,8 +2,10 @@ package com.yt.seckill.error;
 
 
 /**
- * 自定义异常
- * @author
+ *  自定义业务异常
+ *  注意：如果继承的是Exception类，那么Spring的事务管理将会失效，
+ *  只有继承RuntimeException类才使Spring的事务管理不会失效
+ * @author yt
  */
 public class RrException extends RuntimeException {
     private static final long serialVersionUID = 1L;
