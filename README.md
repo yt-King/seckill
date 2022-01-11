@@ -2,6 +2,17 @@
 银行秒杀系统
 ## 2021-11-29
 
-完成了秒杀系统登录功能
+完成了秒杀系统登录功能，采用AOP监控登陆状态（LonginAspect），通过自定义切面实现监控，但是要注意去掉秒杀部分的监控，在秒杀的那一小段时间里去除所有不必要的开销
 
-通过reids实现分布式登录，采用AOP监控登陆状态（LonginAspect）
+![image-20220111144255005](README.images/image-20220111144255005.png)
+
+通过reids实现分布式登录,实现session一致性，采用后端统一存储的方式，实现分布式登录可以为了以后如果有集群搭建的需求做准备。
+
+<img src="README.images/1735a37e17e67100tplv-t2oaga2asx-watermark.awebp" alt="img" style="zoom: 67%;" />
+
+## 2022-1-11
+
+新增全局异常处理，通过@ControllerAdvice 和  @ExceptionHandler(value = xxxxxxxx.class)组合实现,示例：https://juejin.cn/post/6959520793063587848
+
+![image-20220111134844704](README.images/image-20220111134844704.png)
+

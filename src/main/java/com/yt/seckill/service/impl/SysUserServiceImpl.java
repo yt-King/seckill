@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.yt.seckill.utils.MD5Utils.string2MD5;
 
@@ -85,7 +86,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         //生成cookie
         String ticket = CookieUtils.UUID();
-        redisTemplate.opsForValue().set("user:" + ticket, sysUser);
+        redisTemplate.opsForValue().set("user:" + ticket, sysUser,60*60*12, TimeUnit.SECONDS);
         CookieUtils.setCookie(request, response, "userTicket", ticket);
         map.put("msg", "登录成功");
         return map;

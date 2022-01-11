@@ -8,7 +8,7 @@ spring:
     #数据库编号
     database: 0
     host: 150.158.28.238
-    port: 6379
+    port: 6369
     #超时时间
     timeout: 10000ms
     lettuce:
