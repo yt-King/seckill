@@ -26,6 +26,7 @@ mybatis-plus:
   configuration:
     #mysql语句打印
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
 server:
   port: 8080
 management:
