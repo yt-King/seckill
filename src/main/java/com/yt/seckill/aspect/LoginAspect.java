@@ -2,7 +2,6 @@ package com.yt.seckill.aspect;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.yt.seckill.entity.SysUser;
-import com.yt.seckill.error.RrException;
 import com.yt.seckill.utils.CookieUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -34,7 +33,7 @@ public class LoginAspect {
     RedisTemplate redisTemplate;
 
     //定义一个切面,注意这里将用户操作这块的排除了,因为这里包含用户登陆登出,不需要校验.
-    @Pointcut("execution(public * com.yt.seckill.controller.MyControllerAdvice.*(..))")
+    @Pointcut("execution(public * com.yt.seckill.controller.TGoodsController.*(..))")
     public void verify() {
     }
 
@@ -49,12 +48,12 @@ public class LoginAspect {
         System.out.println("CookieUtils.getCookieValue(request,\"userTicket\") = " + CookieUtils.getCookieValue(request, "userTicket"));
         String userTicket = CookieUtils.getCookieValue(request, "userTicket");
         if (StringUtils.isEmpty(userTicket)) {
-            throw new RrException("500", "您还未登录或登录状态以失效");
+//            throw new RrException("500", "您还未登录或登录状态以失效");
         }
         SysUser user = (SysUser) redisTemplate.opsForValue().get("user:" + userTicket);
         System.out.println("user = " + user);
         if (null == user) {
-            throw new RrException("500", "您还未登录或登录状态以失效");
+//            throw new RrException("500", "您还未登录或登录状态以失效");
         }
         CookieUtils.setCookie(request, response, "userTicket", userTicket);
     }

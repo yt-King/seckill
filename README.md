@@ -10,9 +10,9 @@
 
 <img src="README.images/1735a37e17e67100tplv-t2oaga2asx-watermark.awebp" alt="img" style="zoom: 67%;" />
 
-## 2022-1-11
+## 2022-1-12
 
-新增全局异常处理，通过@ControllerAdvice 和  @ExceptionHandler(value = xxxxxxxx.class)组合实现,示例：https://juejin.cn/post/6959520793063587848
+统一接口返回和全局异常处理,示例：https://juejin.cn/post/6986800656950493214
 
-![image-20220111134844704](README.images/image-20220111134844704.png)
+![image-20220112215356823](README.images/image-20220112215356823.png)
 
