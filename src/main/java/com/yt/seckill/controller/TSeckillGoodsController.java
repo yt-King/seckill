@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2022-01-13
  */
 @RestController
-@RequestMapping("//t-seckill-goods")
+@RequestMapping("/seckillgoods")
 public class TSeckillGoodsController {
 
 }

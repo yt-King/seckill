@@ -19,7 +19,7 @@ import java.util.Map;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author yt
@@ -38,7 +38,6 @@ public class TGoodsController {
             map.put("msg", bindingResult.getFieldError().getDefaultMessage());
             return map;
         }
-        throw  new RuntimeException("自定义异常");
-//        return tGoodsService.insertGoods(entity);
+        return tGoodsService.insertGoods(entity);
     }
 }

@@ -12,5 +12,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2022-01-13
  */
 public interface TSeckillGoodsMapper extends BaseMapper<TSeckillGoods> {
-
+    //乐观锁更新库存
+    int updateByOptimistic(TSeckillGoods goods);
 }

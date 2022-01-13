@@ -2,6 +2,9 @@ package com.yt.seckill.entity;
 
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -22,6 +25,7 @@ public class TOrderRecord implements Serializable {
     /**
      * uuid
      */
+    @TableId
     private String dataId;
 
     /**
@@ -32,7 +36,11 @@ public class TOrderRecord implements Serializable {
     /**
      * 下单时间
      */
-    private LocalDateTime orderTime;
+    private Date orderTime;
 
+    /**
+     * 下单用户
+     */
+    private String orderPerson;
 
 }

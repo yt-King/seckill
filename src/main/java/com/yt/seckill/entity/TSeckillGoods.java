@@ -1,6 +1,8 @@
 package com.yt.seckill.entity;
 
 import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -21,6 +23,7 @@ public class TSeckillGoods implements Serializable {
     /**
      * uuid
      */
+    @TableId
     private String dataId;
 
     /**

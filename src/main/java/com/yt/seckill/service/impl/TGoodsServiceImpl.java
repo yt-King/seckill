@@ -17,7 +17,7 @@ import static com.yt.seckill.utils.MD5Utils.string2MD5;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author yt
@@ -29,10 +29,13 @@ public class TGoodsServiceImpl extends ServiceImpl<TGoodsMapper, TGoods> impleme
     TGoodsMapper tGoodsMapper;
 
     /**
-     * 新增秒杀商品
+     * 功能描述:
+     * 秒杀商品新增
      *
      * @param entity
-     * @return
+     * @return java.util.Map
+     * @author yt
+     * @date 2022/1/13 11:29
      */
     public Map insertGoods(TGoods entity) {
         Map map = new HashMap();
