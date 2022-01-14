@@ -26,7 +26,7 @@
 
 导入swagger，选用swagger3，比之前的2更加简单，引入依赖即可，并通过Swagger3Config类进行配置
 
-```java
+```yml
 implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
 ```
 
@@ -47,4 +47,28 @@ implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '
 ```
 
 ![img](README.images/format,png.png)
+
+先引入Google的guava依赖，其内包含令牌桶算法
+
+```yml
+    implementation group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
+```
+
+在下单接口加上令牌桶限流
+
+```java
+ //每秒放行100个请求
+    RateLimiter rateLimiter = RateLimiter.create(100);
+
+    @PostMapping("/create")
+    @Operation(summary = "用户下单")
+    public TOrderRecord createWrongOrder(String dataid) throws Exception {
+        //非阻塞式获取令牌：请求进来后，若令牌桶里没有足够的令牌，会尝试等待设置好的时间（这里写了1000ms），其会自动判断在1000ms后，
+        //这个请求能不能拿到令牌，如果不能拿到，直接返回抢购失败。如果timeout设置为0，则等于阻塞时获取令牌。
+        if (!rateLimiter.tryAcquire(1000, TimeUnit.MILLISECONDS))
+            throw new RuntimeException("抢购失败，限流");
+        TOrderRecord tOrderRecord = tOrderRecordService.createOrder(dataid);
+        return tOrderRecord;
+    }
+```
 
