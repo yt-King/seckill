@@ -48,12 +48,12 @@ public class LoginAspect {
         System.out.println("CookieUtils.getCookieValue(request,\"userTicket\") = " + CookieUtils.getCookieValue(request, "userTicket"));
         String userTicket = CookieUtils.getCookieValue(request, "userTicket");
         if (StringUtils.isEmpty(userTicket)) {
-//            throw new RrException("500", "您还未登录或登录状态以失效");
+            throw new RuntimeException("您还未登录或登录状态以失效");
         }
         SysUser user = (SysUser) redisTemplate.opsForValue().get("user:" + userTicket);
         System.out.println("user = " + user);
         if (null == user) {
-//            throw new RrException("500", "您还未登录或登录状态以失效");
+            throw new RuntimeException("您还未登录或登录状态以失效");
         }
         CookieUtils.setCookie(request, response, "userTicket", userTicket);
     }
