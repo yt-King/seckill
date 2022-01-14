@@ -5,6 +5,8 @@ import com.yt.seckill.entity.SysUser;
 import com.yt.seckill.entity.TGoods;
 import com.yt.seckill.service.impl.SysUserServiceImpl;
 import com.yt.seckill.service.impl.TGoodsServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,11 +29,13 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/goods")
+@Tag(name = "t-goods-controller", description = "商品接口")
 public class TGoodsController {
     @Autowired
     private TGoodsServiceImpl tGoodsService;
 
     @PostMapping("/insert")
+    @Operation(summary = "商品新增")
     public Map insert(@RequestBody @Valid TGoods entity, BindingResult bindingResult) {
         if (bindingResult.hasErrors())
             throw new RuntimeException(bindingResult.getFieldError().getDefaultMessage());

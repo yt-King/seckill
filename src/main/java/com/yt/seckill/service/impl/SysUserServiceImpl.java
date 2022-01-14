@@ -1,7 +1,7 @@
 package com.yt.seckill.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.yt.seckill.entity.ParamUserDto;
+import com.yt.seckill.entity.Dto.ParamUserDto;
 import com.yt.seckill.entity.SysUser;
 import com.yt.seckill.mapper.SysUserMapper;
 import com.yt.seckill.service.ISysUserService;
@@ -9,13 +9,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yt.seckill.utils.CookieUtils;
 import com.yt.seckill.utils.IdcardUtils;
 import com.yt.seckill.utils.MD5Utils;
-import com.yt.seckill.utils.validatorUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.jws.Oneway;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;

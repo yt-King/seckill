@@ -29,7 +29,7 @@ public class TSeckillGoodsServiceImpl extends ServiceImpl<TSeckillGoodsMapper, T
      * @author yt
      * @date 2022/1/13 21:30
      */
-    public TSeckillGoods checkGoods(int dataid) {
+    public TSeckillGoods checkGoods(String dataid) {
         TSeckillGoods tSeckillGoods = tSeckillGoodsMapper.selectOne(new QueryWrapper<TSeckillGoods>().eq("data_id", dataid));
         if (tSeckillGoods.getGoodsNum().equals(tSeckillGoods.getGoodsSale())) {
             throw new RuntimeException("库存不足");

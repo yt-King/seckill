@@ -36,7 +36,7 @@ public class TOrderRecordServiceImpl extends ServiceImpl<TOrderRecordMapper, TOr
      * @author yt
      * @date 2022/1/13 21:30
      */
-    public TOrderRecord createOrder(int dataid) throws Exception {
+    public TOrderRecord createOrder(String dataid) throws Exception {
         //校验库存
         TSeckillGoods goods = tSeckillGoodsService.checkGoods(dataid);
         //乐观锁更新库存呢

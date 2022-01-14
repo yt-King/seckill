@@ -2,7 +2,7 @@
 银行秒杀系统开发记录
 ## 2021-11-29
 
-完成了秒杀系统登录功能，采用AOP监控登陆状态（LonginAspect），通过自定义切面实现监控，但是要注意去掉秒杀部分的监控，在秒杀的那一小段时间里去除所有不必要的开销
+完成了秒杀系统登录功能，采用AOP监控登陆状态（LonginAspect）,使用Validation API进行参数校验，通过自定义切面实现监控，但是要注意去掉秒杀部分的监控，在秒杀的那一小段时间里去除所有不必要的开销
 
 ![image-20220111144255005](README.images/image-20220111144255005.png)
 
@@ -12,7 +12,7 @@
 
 ## 2022-1-12
 
-统一接口返回和全局异常处理,示例：https://juejin.cn/post/6986800656950493214
+统一接口返回和全局异常处理,规定将所有错误信息统一以异常抛出，示例：https://juejin.cn/post/6986800656950493214
 
 ![image-20220112215356823](README.images/image-20220112215356823.png)
 
@@ -21,3 +21,20 @@
 新增秒杀订单表，秒杀商品表，通过乐观锁实现下单防止超卖
 
 ![image-20220113213447061](README.images/image-20220113213447061.png)
+
+## 2022-1-14
+
+导入swagger，选用swagger3，比之前的2更加简单，引入依赖即可，并通过Swagger3Config类进行配置
+
+```java
+implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
+```
+
+引入依赖后需要解决之前配置的@RestControllerAdvice和swagger的冲突，直接使用会导致swagger返回的结果被@RestControllerAdvice封装，页面会跳出如下提示
+
+![image-20220114123643600](README.images/image-20220114123643600.png)
+
+进行配置将swagger结果直接返回即可,具体操作：https://juejin.cn/post/6921700441038258189
+
+![image-20220114123816959](README.images/image-20220114123816959.png)
+
