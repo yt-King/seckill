@@ -54,10 +54,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         entity.setSex(IdcardUtils.getGenderByIdCard(idcard));
         entity.setAddress(IdcardUtils.getProvinceByIdCard(idcard));
         //通过在实体类上添加自定义注解校校验手机号，然后判断手机号是否被注册
-        if (sysUserMapper.selectByTel(entity.getTel()) > 0) {
-            map.put("msg", "该手机号以注册");
-            return map;
-        }
+        if (sysUserMapper.selectByTel(entity.getTel()) > 0)
+            throw new RuntimeException("该手机号以注册");
         //MD5密码加密
         entity.setPassWord(string2MD5(entity.getPassWord()));
         sysUserMapper.insert(entity);
@@ -75,18 +73,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     public Map login(ParamUserDto entity, HttpServletRequest request, HttpServletResponse response) {
         Map map = new HashMap();
-        if (sysUserMapper.selectByTel(entity.getTel()) != 1) {
-            map.put("msg", "账号或密码错误");
-            return map;
-        }
+        if (sysUserMapper.selectByTel(entity.getTel()) != 1)
+            throw new RuntimeException("账号或密码错误");
         SysUser sysUser = sysUserMapper.selectAllByTel(entity.getTel());
-        if (!MD5Utils.passwordIsTrue(entity.getPassWord(), sysUser.getPassWord())) {
-            map.put("msg", "账号或密码错误");
-            return map;
-        }
+        if (!MD5Utils.passwordIsTrue(entity.getPassWord(), sysUser.getPassWord()))
+            throw new RuntimeException("账号或密码错误");
         //生成cookie
         String ticket = CookieUtils.UUID();
-        redisTemplate.opsForValue().set("user:" + ticket, sysUser,60*60*12, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set("user:" + ticket, sysUser, 60 * 60 * 12, TimeUnit.SECONDS);
         CookieUtils.setCookie(request, response, "userTicket", ticket);
         map.put("msg", "登录成功");
         return map;
@@ -94,12 +88,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     /**
      * 通过cookie获取用户信息
+     *
      * @param userTicket
      * @param request
      * @param response
      * @return
      */
-    public SysUser getUserByCookie(String userTicket,HttpServletRequest request, HttpServletResponse response) {
+    public SysUser getUserByCookie(String userTicket, HttpServletRequest request, HttpServletResponse response) {
         if (StringUtils.isEmpty(userTicket)) {
             return null;
         }

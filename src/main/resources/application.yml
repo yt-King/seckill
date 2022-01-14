@@ -34,4 +34,9 @@ management:
     health:
       show-details: always
 
+#swagger3
+springfox:
+  documentation:
+    swagger-ui:
+      enabled: true
 

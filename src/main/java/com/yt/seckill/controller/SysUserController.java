@@ -35,21 +35,15 @@ public class SysUserController {
 
     @PostMapping("/reg")
     public Map insert(@RequestBody @Valid SysUser entity, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            Map map = new HashMap();
-            map.put("msg", bindingResult.getFieldError().getDefaultMessage());
-            return map;
-        }
+        if (bindingResult.hasErrors())
+            throw new RuntimeException(bindingResult.getFieldError().getDefaultMessage());
         return sysUserService.insertUser(entity);
     }
 
     @PostMapping("/login")
     public Map login(@RequestBody @Valid ParamUserDto entity, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
-        if (bindingResult.hasErrors()) {
-            Map map = new HashMap();
-            map.put("msg", bindingResult.getFieldError().getDefaultMessage());
-            return map;
-        }
-        return sysUserService.login(entity,request,response);
+        if (bindingResult.hasErrors())
+            throw new RuntimeException(bindingResult.getFieldError().getDefaultMessage());
+        return sysUserService.login(entity, request, response);
     }
 }

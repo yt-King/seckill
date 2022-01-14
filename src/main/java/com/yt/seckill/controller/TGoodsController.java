@@ -33,11 +33,8 @@ public class TGoodsController {
 
     @PostMapping("/insert")
     public Map insert(@RequestBody @Valid TGoods entity, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            Map map = new HashMap();
-            map.put("msg", bindingResult.getFieldError().getDefaultMessage());
-            return map;
-        }
+        if (bindingResult.hasErrors())
+            throw new RuntimeException(bindingResult.getFieldError().getDefaultMessage());
         return tGoodsService.insertGoods(entity);
     }
 }
