@@ -29,24 +29,40 @@ public class TOrderRecordServiceImpl extends ServiceImpl<TOrderRecordMapper, TOr
 
     /**
      * 功能描述:
-     * 订单生成
+     * 创建临时订单，用于给用户支付，不写入数据库库，没有订单号，支付成功后写入数据库时生成订单号
      *
      * @param dataid
      * @return com.yt.seckill.entity.TOrderRecord
      * @author yt
-     * @date 2022/1/13 21:30
+     * @date 2022/1/14 22:49
      */
-    public TOrderRecord createOrder(String dataid) throws Exception {
+    public TOrderRecord createTempOrder(String dataid) throws Exception {
         //校验库存
         TSeckillGoods goods = tSeckillGoodsService.checkGoods(dataid);
-        //乐观锁更新库存呢
-        tSeckillGoodsService.saleOptimistic(goods);
-        //创建订单
+        //创建临时订单，发给用户用以支付，不写入数据库
         TOrderRecord order = new TOrderRecord();
         order.setDataId(goods.getDataId());
         order.setOrderTime(new Date());
 //        order.setOrderPerson("yt");
-        tOrderRecordMapper.insert(order);
         return order;
+    }
+
+    /**
+     * 功能描述:
+     * 用户支付时调用方法将订单写入数据库表示抢购成功
+     *
+     * @param tOrderRecord
+     * @return java.lang.String
+     * @author yt
+     * @date 2022/1/14 22:48
+     */
+    public String createOrder(TOrderRecord tOrderRecord) throws Exception {
+        //校验库存
+        TSeckillGoods goods = tSeckillGoodsService.checkGoods(tOrderRecord.getDataId());
+        //乐观锁更新库存呢
+        tSeckillGoodsService.saleOptimistic(goods);
+        //创建订单
+        tOrderRecordMapper.insert(tOrderRecord);
+        return "抢购成功";
     }
 }

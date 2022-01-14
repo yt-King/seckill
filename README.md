@@ -72,3 +72,4 @@ implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '
     }
 ```
 
+将下单接口拆分，变为createTempOrder和createRealOrder两个方法，第一个方法用于在用户点击下单时生成临时订单返回给用户（不写入数据库），在用户成功付款后（点击支付按钮时）调用第二个方法将订单写入数据库表示抢购成功，两个方法调用时都会先检查销售数量。
