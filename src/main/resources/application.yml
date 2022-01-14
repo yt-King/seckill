@@ -22,10 +22,10 @@ spring:
         #最小空闲连接数，默认0
         min-idle: 5
 
-mybatis-plus:
-  configuration:
+#mybatis-plus:
+#  configuration:
     #mysql语句打印
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 server:
   port: 8080
