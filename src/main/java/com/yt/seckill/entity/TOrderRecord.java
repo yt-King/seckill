@@ -33,10 +33,9 @@ public class TOrderRecord implements Serializable {
     private String dataId;
 
     /**
-     * 订单号，uuid自动生成
+     * 订单号
      */
-    @TableId(type = IdType.ASSIGN_UUID)
-    @Schema(hidden = true)
+    @Schema(name = "orderId", description = "订单号，将临时订单校验时的hashKey填入")
     private String orderId;
 
     /**

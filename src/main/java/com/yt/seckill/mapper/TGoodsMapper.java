@@ -12,5 +12,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2022-01-12
  */
 public interface TGoodsMapper extends BaseMapper<TGoods> {
-
+    //判断时间是否在秒杀时间内
+    public int checktime(String dataId,String time);
 }

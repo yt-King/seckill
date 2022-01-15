@@ -8,6 +8,7 @@ import com.yt.seckill.mapper.TSeckillGoodsMapper;
 import com.yt.seckill.service.ITGoodsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yt.seckill.utils.IdcardUtils;
+import com.yt.seckill.utils.TimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class TGoodsServiceImpl extends ServiceImpl<TGoodsMapper, TGoods> impleme
     TGoodsMapper tGoodsMapper;
     @Autowired
     TSeckillGoodsMapper tSeckillGoodsMapper;
+
     /**
      * 功能描述:
      * 秒杀商品新增
@@ -42,7 +44,7 @@ public class TGoodsServiceImpl extends ServiceImpl<TGoodsMapper, TGoods> impleme
      */
     public Map insertGoods(TGoods entity) {
         Map map = new HashMap();
-        TSeckillGoods tSeckillGoods=new TSeckillGoods();
+        TSeckillGoods tSeckillGoods = new TSeckillGoods();
         tGoodsMapper.insert(entity);
         //新增商品时更新秒杀商品的信息
         tSeckillGoods.setDataId(entity.getDataId());//商品新增完成后得到dataid进行赋值
@@ -50,5 +52,11 @@ public class TGoodsServiceImpl extends ServiceImpl<TGoodsMapper, TGoods> impleme
         tSeckillGoodsMapper.insert(tSeckillGoods);
         map.put("msg", "新增成功");
         return map;
+    }
+
+    public void checktime(String dataId) {
+        String time = TimeUtils.getNowTime();
+        if (1 > tGoodsMapper.checktime(dataId, time))
+            throw new RuntimeException("不在秒杀时间内或该商品不存在");
     }
 }

@@ -2,6 +2,7 @@ package com.yt.seckill.controller;
 
 
 import com.google.common.util.concurrent.RateLimiter;
+import com.yt.seckill.entity.Dto.ParamTempDto;
 import com.yt.seckill.entity.TOrderRecord;
 import com.yt.seckill.service.impl.TOrderRecordServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,18 +36,20 @@ public class TOrderRecordController {
 
     @PostMapping("/createtemp")
     @Operation(summary = "用户下单生成临时待支付订单")
-    public TOrderRecord createTempOrder(String dataid) throws Exception {
+    public TOrderRecord createTempOrder(@RequestBody ParamTempDto params) throws Exception {
         //非阻塞式获取令牌：请求进来后，若令牌桶里没有足够的令牌，会尝试等待设置好的时间（这里写了1000ms），其会自动判断在1000ms后，
         //这个请求能不能拿到令牌，如果不能拿到，直接返回抢购失败。如果timeout设置为0，则等于阻塞时获取令牌。
         if (!rateLimiter.tryAcquire(1000, TimeUnit.MILLISECONDS))
             throw new RuntimeException("下单失败，限流");
-        TOrderRecord tOrderRecord = tOrderRecordService.createTempOrder(dataid);
+        TOrderRecord tOrderRecord = tOrderRecordService.createTempOrder(params);
         return tOrderRecord;
     }
 
     @PostMapping("/createreal")
-    @Operation(summary = "用户支付成功后下单")//点击支付按钮的时候调用接口
+    @Operation(summary = "用户支付成功后下单")//点击确认支付按钮的时候调用接口,支付前校验是否已经下单（校验订单号）
     public String createRealOrder(@RequestBody TOrderRecord tOrderRecord) throws Exception {
+        //校验订单号是否已经下单（下单后十分钟内有效）
+        tOrderRecordService.doverfy(tOrderRecord.getOrderPerson(),tOrderRecord.getDataId(),tOrderRecord.getOrderId());
         //非阻塞式获取令牌：请求进来后，若令牌桶里没有足够的令牌，会尝试等待设置好的时间（这里写了1000ms），其会自动判断在1000ms后，
         //这个请求能不能拿到令牌，如果不能拿到，直接返回抢购失败。如果timeout设置为0，则等于阻塞时获取令牌。
         if (!rateLimiter.tryAcquire(1000, TimeUnit.MILLISECONDS))
