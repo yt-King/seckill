@@ -1,28 +1,58 @@
 # seckill
 银行秒杀系统开发记录
-## 2021-11-29
+## 2021-11-29（登录功能）
 
 完成了秒杀系统登录功能，采用AOP监控登陆状态（LonginAspect）,使用Validation API进行参数校验，通过自定义切面实现监控，但是要注意去掉秒杀部分的监控，在秒杀的那一小段时间里去除所有不必要的开销
 
 ![image-20220111144255005](README.images/image-20220111144255005.png)
 
-通过reids实现分布式登录,实现session一致性，采用后端统一存储的方式，实现分布式登录可以为了以后如果有集群搭建的需求做准备。
+通过reids实现分布式登录,实现session一致性，采用后端统一存储的方式，实现分布式登录可以为了以后如果有集群搭建的需求做准备。在yml文件里面配置好redis的连接信息，然后再RedisConfig配置RedisTemplate操作数据库。
+
+```java
+@Bean
+public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory){
+    RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+    //对redis进行相应的配置,使得redis存储时可以直观显示
+    //key序列化
+    redisTemplate.setKeySerializer(new StringRedisSerializer());
+    //value序列化
+    redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+    //hash类型key序列化
+    redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+    //hash类型value序列化
+    redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+    //注入连接工厂
+    redisTemplate.setConnectionFactory(redisConnectionFactory);
+    return  redisTemplate;
+}
+```
+
+使用的时候只要自动装配一下就可以了
+
+```java
+@Autowired
+RedisTemplate redisTemplate;
+。。。
+。。。
+//set操作
+redisTemplate.opsForValue().set("user:" + ticket, sysUser, 60 * 60 * 12, TimeUnit.SECONDS);
+```
 
 <img src="README.images/1735a37e17e67100tplv-t2oaga2asx-watermark.awebp" alt="img" style="zoom: 67%;" />
 
-## 2022-1-12
+## 2022-1-12（统一接口返回和全局异常处理）
 
 统一接口返回和全局异常处理,规定将所有错误信息统一以异常抛出，示例：https://juejin.cn/post/6986800656950493214
 
 ![image-20220112215356823](README.images/image-20220112215356823.png)
 
-## 2022-1-13
+## 2022-1-13（乐观锁防止超卖）
 
 新增秒杀订单表，秒杀商品表，通过乐观锁实现下单防止超卖
 
 ![image-20220113213447061](README.images/image-20220113213447061.png)
 
-## 2022-1-14
+## 2022-1-14（配置swagger3，令牌桶限流）
 
 导入swagger，选用swagger3，比之前的2更加简单，引入依赖即可，并通过Swagger3Config类进行配置
 
@@ -74,7 +104,7 @@ implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '
 
 由于需求是支付成功后减少库存，所以将下单接口拆分，变为createTempOrder和createRealOrder两个方法，第一个方法用于在用户点击下单时生成临时订单返回给用户（不写入数据库），在用户成功付款后（点击确认支付按钮时）调用第二个方法将订单写入数据库表示抢购成功，两个方法调用时都会先检查销售数量。
 
-## 2022-1-15
+## 2022-1-15（接口隐藏）
 
 为了防止脚本抢购秒杀商品等行为，需要将接口隐藏，抢购接口隐藏（接口加盐）的具体做法：
 
@@ -118,4 +148,79 @@ order.setOrderId(verifyHash);
 现阶段的下单大体流程如下：
 
 ![image-20220115211759127](README.images/image-20220115211759127.png)
+
+## 2022-1-17（限制接口访问次数）
+
+接口隐藏以后还需要对一些重要的接口限制访问次数，比如上面的三个接口都是跟下单有关的，如果被一些伄人拿到这些接口写个脚本一直访问服务器肯定会崩溃，所以需要对这些接口限制访问次数，常规做法还是在用reids实现，可以记录用户的访问次数，也可以记录ip的访问次（我采用的是这个）数等等。我这里为了数据库不太乱所以又用docker搞了个数据库专门记录ip访问次数。
+
+在RedisConfig里面配置新的数据库连接，通过这种配置的方式不与之前的数据库起冲突，调用也很方便。
+
+```java
+@Bean(name = "IpCountRedisTemplate")
+RedisTemplate<String,Object> IpCountRedisTemplate(){
+    RedisStandaloneConfiguration server = new RedisStandaloneConfiguration();
+    server.setHostName("150.158.28.238"); // 指定地址
+    server.setDatabase(x); // 指定数据库
+    server.setPort(xxxx); //指定端口
+    LettuceConnectionFactory factory = new LettuceConnectionFactory(server);
+    factory.afterPropertiesSet(); //刷新配置
+
+    RedisTemplate<String,Object> redisTemplate = new RedisTemplate<>();
+    redisTemplate.setConnectionFactory(factory);
+    redisTemplate.setKeySerializer(new StringRedisSerializer());
+    redisTemplate.setValueSerializer(new FastJsonRedisSerializer<>(Object.class));
+    return redisTemplate;
+}
+```
+
+```java
+//通过这种方式注入，因为之前已经有一个RedisTemplate类型的bean了，所以要byname注入
+@Resource(name = "IpCountRedisTemplate")
+RedisTemplate ipCountRedisTemplate;//专门用于统计IP访问次数的redis
+```
+
+配置完数据库后就可以对接口进行访问限制，我采用的是对ip进行限制，找一个iputil的工具类获取request的IP地址然后加盐当作key，访问次数作为value存到redis里面去。
+
+```java
+/**
+     * 功能描述:
+     * ip访问接口次数加1
+     *
+     * @param request
+     * @return int
+     * @author yt
+     * @date 2022/1/17 18:40
+     */
+    public int addIpCount(HttpServletRequest request) throws Exception {
+        String ipAddress = IpUtil.getIpAddr(request);
+        String limitKey = CacheKey.LIMIT_KEY.getKey() + "_" + ipAddress;
+        String limitNum = (String) ipCountRedisTemplate.opsForValue().get(limitKey);
+        int limit = -1;
+        if (limitNum == null) {
+            ipCountRedisTemplate.opsForValue().set(limitKey, "0", 600, TimeUnit.SECONDS);
+        } else {
+            limit = Integer.parseInt(limitNum) + 1;
+            ipCountRedisTemplate.opsForValue().set(limitKey, String.valueOf(limit), 600, TimeUnit.SECONDS);
+        }
+        return limit;
+    }
+
+    /**
+     * 功能描述:
+     * 检查IP访问接口次数
+     *
+     * @param request
+     * @return void
+     * @author yt
+     * @date 2022/1/17 18:40
+     */
+    public void CheckIpIsBanned(HttpServletRequest request) {
+        String ipAddress = IpUtil.getIpAddr(request);
+        String limitKey = CacheKey.LIMIT_KEY.getKey() + "_" + ipAddress;
+        String limitNum = (String) ipCountRedisTemplate.opsForValue().get(limitKey);
+        if(null == limitNum) return;
+        if (Integer.parseInt(limitNum) >= ALLOW_COUNT)
+            throw new RuntimeException("禁止频繁访问，请十分钟后再试");
+    }
+```
 

@@ -111,6 +111,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return user;
     }
 
+    /**
+     * 功能描述:
+     * ip访问接口次数加1
+     *
+     * @param request
+     * @return int
+     * @author yt
+     * @date 2022/1/17 18:40
+     */
     public int addIpCount(HttpServletRequest request) throws Exception {
         String ipAddress = IpUtil.getIpAddr(request);
         String limitKey = CacheKey.LIMIT_KEY.getKey() + "_" + ipAddress;
@@ -125,6 +134,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return limit;
     }
 
+    /**
+     * 功能描述:
+     * 检查IP访问接口次数
+     *
+     * @param request
+     * @return void
+     * @author yt
+     * @date 2022/1/17 18:40
+     */
     public void CheckIpIsBanned(HttpServletRequest request) {
         String ipAddress = IpUtil.getIpAddr(request);
         String limitKey = CacheKey.LIMIT_KEY.getKey() + "_" + ipAddress;

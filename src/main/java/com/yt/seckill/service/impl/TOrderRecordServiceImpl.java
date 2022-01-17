@@ -77,8 +77,18 @@ public class TOrderRecordServiceImpl extends ServiceImpl<TOrderRecordMapper, TOr
         return "抢购成功";
     }
 
+    /**
+     * 功能描述:
+     * 验证hash值合法性
+     *
+     * @param userId
+     * @param goodsId
+     * @param verifyHash
+     * @return void
+     * @author yt
+     * @date 2022/1/17 18:41
+     */
     public void doverfy(String userId,String goodsId,String verifyHash) throws Exception {
-        // 验证hash值合法性
         String hashKey = CacheKey.VERIFY_KEY.getKey() + "_" + userId + "_" + goodsId;
         String verifyHashInRedis = (String) redisTemplate.opsForValue().get(hashKey);
         if (!verifyHash.equals(verifyHashInRedis))
