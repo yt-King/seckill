@@ -1,14 +1,13 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/seckill?useUnicode=true&characterEncoding=UTF-8&useSSL=false
-    username: root
-    password: 123
+    url: jdbc:mysql://150.158.28.238:3306/seckill?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+
   redis:
     #数据库编号
     database: 0
     host: 150.158.28.238
-    port: 6369
+    port:
     #超时时间
     timeout: 10000ms
     lettuce:
@@ -39,4 +38,6 @@ springfox:
   documentation:
     swagger-ui:
       enabled: true
-
+#接口允许访问最大次数
+seckill:
+  ALLOW_COUNT: 10

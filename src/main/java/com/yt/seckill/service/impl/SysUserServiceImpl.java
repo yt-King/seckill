@@ -2,18 +2,22 @@ package com.yt.seckill.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.yt.seckill.entity.Dto.ParamUserDto;
+import com.yt.seckill.entity.Enum.CacheKey;
 import com.yt.seckill.entity.SysUser;
 import com.yt.seckill.mapper.SysUserMapper;
 import com.yt.seckill.service.ISysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yt.seckill.utils.CookieUtils;
 import com.yt.seckill.utils.IdcardUtils;
+import com.yt.seckill.utils.IpUtil;
 import com.yt.seckill.utils.MD5Utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -36,6 +40,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     SysUserMapper sysUserMapper;
     @Autowired
     RedisTemplate redisTemplate;
+    @Resource(name = "IpCountRedisTemplate")
+    RedisTemplate ipCountRedisTemplate;//专门用于统计IP访问次数的redis
+    @Value("${seckill.ALLOW_COUNT}")
+    int ALLOW_COUNT; //接口允许访问最大次数
 
     /**
      * 注册
@@ -101,5 +109,28 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             CookieUtils.setCookie(request, response, "userTicket", userTicket);
         }
         return user;
+    }
+
+    public int addIpCount(HttpServletRequest request) throws Exception {
+        String ipAddress = IpUtil.getIpAddr(request);
+        String limitKey = CacheKey.LIMIT_KEY.getKey() + "_" + ipAddress;
+        String limitNum = (String) ipCountRedisTemplate.opsForValue().get(limitKey);
+        int limit = -1;
+        if (limitNum == null) {
+            ipCountRedisTemplate.opsForValue().set(limitKey, "0", 600, TimeUnit.SECONDS);
+        } else {
+            limit = Integer.parseInt(limitNum) + 1;
+            ipCountRedisTemplate.opsForValue().set(limitKey, String.valueOf(limit), 600, TimeUnit.SECONDS);
+        }
+        return limit;
+    }
+
+    public void CheckIpIsBanned(HttpServletRequest request) {
+        String ipAddress = IpUtil.getIpAddr(request);
+        String limitKey = CacheKey.LIMIT_KEY.getKey() + "_" + ipAddress;
+        String limitNum = (String) ipCountRedisTemplate.opsForValue().get(limitKey);
+        if(null == limitNum) return;
+        if (Integer.parseInt(limitNum) >= ALLOW_COUNT)
+            throw new RuntimeException("禁止频繁访问，请十分钟后再试");
     }
 }

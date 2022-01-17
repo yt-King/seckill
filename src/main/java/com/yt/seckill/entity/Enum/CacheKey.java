@@ -8,8 +8,8 @@ package com.yt.seckill.entity.Enum;
 public enum CacheKey {
     SALT_KEY("ytKing"),
     SEC_SALT_KEY("KingYT"),
+    LIMIT_KEY("limitKEY"),
     VERIFY_KEY("seckill");
-
     private String key;
 
     private CacheKey(String key) {
