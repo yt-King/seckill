@@ -13,4 +13,17 @@
         WHERE tel = #{tel}
           and is_delete = 0 LIMIT 1
     </select>
+    <select id="getUserPower" resultType="java.util.HashMap" parameterType="String">
+        SELECT user.user_id ,user.tel,role.roleName,role.roleId,per.permissionsName ,per.perId,per.perRemarks
+        FROM sys_user AS user,
+			 sys_role AS role,
+			 sys_permissions AS per,
+			 t_role_permiss,
+			 t_user_role
+        WHERE user.user_id=#{userId}
+          AND user.user_id=t_user_role.userId
+          AND t_user_role.roleId=role.roleId
+          AND t_role_permiss.roleId=role.roleId
+          AND t_role_permiss.perId=per.perId
+    </select>
 </mapper>

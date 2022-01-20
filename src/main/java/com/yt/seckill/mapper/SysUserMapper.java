@@ -4,6 +4,9 @@ import com.yt.seckill.entity.SysUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  *  Mapper 接口
@@ -14,6 +17,8 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface SysUserMapper extends BaseMapper<SysUser> {
+    //获取用户权限列表
+    List<Map<String, Object>> getUserPower(String userName);
     //数据插入
     int insert(SysUser entity);
     //根据电话号码查询数量

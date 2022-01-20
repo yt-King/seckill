@@ -35,6 +35,9 @@ dependencies {
     implementation group: 'com.baomidou', name: 'mybatis-plus-boot-starter', version: '3.3.2'
     implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
     implementation group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.4.5'
+    implementation group: 'com.auth0', name: 'java-jwt', version: '3.10.3'
+    implementation group: 'org.apache.shiro', name: 'shiro-spring', version: '1.4.0'
 
 
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'

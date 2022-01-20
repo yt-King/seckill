@@ -40,20 +40,20 @@ public class LoginAspect {
 
     @Before("verify()")
     public void doVerify() {
-        //获取request
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = attributes.getRequest();
-        HttpServletResponse response = attributes.getResponse();
-        //查询cookie,使用封装好的工具类
-//        System.out.println("CookieUtils.getCookieValue(request,\"userTicket\") = " + CookieUtils.getCookieValue(request, "userTicket"));
-        String userTicket = CookieUtils.getCookieValue(request, "userTicket");
-        if (StringUtils.isEmpty(userTicket)) {
-            throw new RuntimeException("您还未登录或登录状态已失效");
-        }
-        SysUser user = (SysUser) redisTemplate.opsForValue().get("user:" + userTicket);
-        if (null == user) {
-            throw new RuntimeException("您还未登录或登录状态已失效");
-        }
-//        CookieUtils.setCookie(request, response, "userTicket", userTicket);
+//        //获取request
+//        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+//        HttpServletRequest request = attributes.getRequest();
+//        HttpServletResponse response = attributes.getResponse();
+//        //查询cookie,使用封装好的工具类
+////        System.out.println("CookieUtils.getCookieValue(request,\"userTicket\") = " + CookieUtils.getCookieValue(request, "userTicket"));
+//        String userTicket = CookieUtils.getCookieValue(request, "userTicket");
+//        if (StringUtils.isEmpty(userTicket)) {
+//            throw new RuntimeException("您还未登录或登录状态已失效");
+//        }
+//        SysUser user = (SysUser) redisTemplate.opsForValue().get("user:" + userTicket);
+//        if (null == user) {
+//            throw new RuntimeException("您还未登录或登录状态已失效");
+//        }
+////        CookieUtils.setCookie(request, response, "userTicket", userTicket);
     }
 }

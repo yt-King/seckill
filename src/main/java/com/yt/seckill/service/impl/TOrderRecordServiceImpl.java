@@ -91,6 +91,8 @@ public class TOrderRecordServiceImpl extends ServiceImpl<TOrderRecordMapper, TOr
     public void doverfy(String userId,String goodsId,String verifyHash) throws Exception {
         String hashKey = CacheKey.VERIFY_KEY.getKey() + "_" + userId + "_" + goodsId;
         String verifyHashInRedis = (String) redisTemplate.opsForValue().get(hashKey);
+        if(null==verifyHashInRedis)
+            throw new RuntimeException("请先获取验证值");
         if (!verifyHash.equals(verifyHashInRedis))
             throw new RuntimeException("hash值与Redis中不符合");
     }

@@ -7,10 +7,7 @@ import com.yt.seckill.entity.SysUser;
 import com.yt.seckill.mapper.SysUserMapper;
 import com.yt.seckill.service.ISysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yt.seckill.utils.CookieUtils;
-import com.yt.seckill.utils.IdcardUtils;
-import com.yt.seckill.utils.IpUtil;
-import com.yt.seckill.utils.MD5Utils;
+import com.yt.seckill.utils.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +18,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -44,6 +42,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     RedisTemplate ipCountRedisTemplate;//专门用于统计IP访问次数的redis
     @Value("${seckill.ALLOW_COUNT}")
     int ALLOW_COUNT; //接口允许访问最大次数
+
+    public List<Map<String, Object>> getUserPower(String userId) {
+       return sysUserMapper.getUserPower(userId);
+    }
 
     /**
      * 注册
@@ -84,10 +86,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser sysUser = sysUserMapper.selectAllByTel(entity.getTel());
         if (!MD5Utils.passwordIsTrue(entity.getPassWord(), sysUser.getPassWord()))
             throw new RuntimeException("账号或密码错误");
-        //生成cookie
-        String ticket = CookieUtils.UUID();
-        redisTemplate.opsForValue().set("user:" + ticket, sysUser, 60 * 60 * 12, TimeUnit.SECONDS);
-        CookieUtils.setCookie(request, response, "userTicket", ticket);
+        //生成token——日期加用户id再进行MD5加密
+        String token = string2MD5(TimeUtils.getCuitPreTime()+sysUser.getUserId());
+        redisTemplate.opsForValue().set(token, sysUser, 60 * 60 * 12, TimeUnit.SECONDS);
+        map.put("token", token);
         map.put("msg", "登录成功");
         return map;
     }
@@ -100,16 +102,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @param response
      * @return
      */
-    public SysUser getUserByCookie(String userTicket, HttpServletRequest request, HttpServletResponse response) {
-        if (StringUtils.isEmpty(userTicket)) {
-            return null;
-        }
-        SysUser user = (SysUser) redisTemplate.opsForValue().get("user:" + userTicket);
-        if (null != user) {
-            CookieUtils.setCookie(request, response, "userTicket", userTicket);
-        }
-        return user;
-    }
+//    public SysUser getUserByCookie(String userTicket, HttpServletRequest request, HttpServletResponse response) {
+//        if (StringUtils.isEmpty(userTicket)) {
+//            return null;
+//        }
+//        SysUser user = (SysUser) redisTemplate.opsForValue().get("user:" + userTicket);
+//        if (null != user) {
+//            CookieUtils.setCookie(request, response, "userTicket", userTicket);
+//        }
+//        return user;
+//    }
 
     /**
      * 功能描述:
@@ -147,7 +149,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         String ipAddress = IpUtil.getIpAddr(request);
         String limitKey = CacheKey.LIMIT_KEY.getKey() + "_" + ipAddress;
         String limitNum = (String) ipCountRedisTemplate.opsForValue().get(limitKey);
-        if(null == limitNum) return;
+        if (null == limitNum) return;
         if (Integer.parseInt(limitNum) >= ALLOW_COUNT)
             throw new RuntimeException("禁止频繁访问，请十分钟后再试");
     }

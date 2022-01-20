@@ -52,16 +52,16 @@ public class CodeGenerator {
         gc.setAuthor("yt");
         gc.setOpen(false);
 //        gc.setFileOverride(true);
-         gc.setSwagger2(true); //实体属性 Swagger2 注解
+        gc.setSwagger2(true); //实体属性 Swagger2 注解
         mpg.setGlobalConfig(gc);
 
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql://localhost:3306/seckill?useUnicode=true&useSSL=false&characterEncoding=utf8");
+        dsc.setUrl("jdbc:mysql://150.158.28.238:3306/seckill?useUnicode=true&useSSL=false&characterEncoding=utf8");
         // dsc.setSchemaName("public");
-        dsc.setDriverName("com.mysql.jdbc.Driver");
+        dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("123");
+        dsc.setPassword("root");
         mpg.setDataSource(dsc);
 
         // 包配置

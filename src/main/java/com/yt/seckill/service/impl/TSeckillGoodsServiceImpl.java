@@ -2,6 +2,7 @@ package com.yt.seckill.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.yt.seckill.entity.Dto.ParamTempDto;
 import com.yt.seckill.entity.Enum.CacheKey;
 import com.yt.seckill.entity.SysUser;
 import com.yt.seckill.entity.TSeckillGoods;
@@ -74,30 +75,30 @@ public class TSeckillGoodsServiceImpl extends ServiceImpl<TSeckillGoodsMapper, T
      * 功能描述:
      * 获取验证值以掩藏抢购的接口
      *
-     * @param dataId 商品id
+     * @param paramTempDto
      * @return java.lang.String
      * @author yt
      * @date 2022/1/15 16:13
      */
-    public String getVerifyHash(String dataId) throws Exception {
+    public String getVerifyHash(ParamTempDto paramTempDto) throws Exception {
         // 验证是否在抢购时间内
-        tGoodsService.checktime(dataId);
+        tGoodsService.checktime(paramTempDto.getGoodsId());
 
-        // 检查用户合法性
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = attributes.getRequest();
-        //查询cookie,使用封装好的工具类
-        String userTicket = CookieUtils.getCookieValue(request, "userTicket");
-        if (StringUtils.isEmpty(userTicket)) {
-            throw new RuntimeException("您还未登录或登录状态已失效");
-        }
-        SysUser user = (SysUser) redisTemplate.opsForValue().get("user:" + userTicket);
-        if (null == user) {
-            throw new RuntimeException("您还未登录或登录状态已失效");
-        }
+//        // 检查用户合法性
+//        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+//        HttpServletRequest request = attributes.getRequest();
+//        //查询cookie,使用封装好的工具类
+//        String userTicket = CookieUtils.getCookieValue(request, "userTicket");
+//        if (StringUtils.isEmpty(userTicket)) {
+//            throw new RuntimeException("您还未登录或登录状态已失效");
+//        }
+//        SysUser user = (SysUser) redisTemplate.opsForValue().get("user:" + userTicket);
+//        if (null == user) {
+//            throw new RuntimeException("您还未登录或登录状态已失效");
+//        }
 
         // 盐+用户id+商品id生成hash进行第一次MD5加密，用于临时订单接口生成真正的校验码
-        String verify = CacheKey.SALT_KEY.getKey() + user.getUserId() + dataId;
+        String verify = CacheKey.SALT_KEY.getKey() + paramTempDto.getUserId() + paramTempDto.getGoodsId();
         String verifyHash = DigestUtils.md5DigestAsHex(verify.getBytes());
 
         //第二次加密，用于真正下单支付时校验
@@ -105,7 +106,7 @@ public class TSeckillGoodsServiceImpl extends ServiceImpl<TSeckillGoodsMapper, T
         String verifyHash2 = DigestUtils.md5DigestAsHex(verify2.getBytes());
 
         // 将第二次加密后的存入redis
-        String hashKey = CacheKey.VERIFY_KEY.getKey() + "_" + user.getUserId() + "_" + dataId;
+        String hashKey = CacheKey.VERIFY_KEY.getKey() + "_" + paramTempDto.getUserId() + "_" + paramTempDto.getGoodsId();
         redisTemplate.opsForValue().set(hashKey, verifyHash2, 600, TimeUnit.SECONDS);
 
         //返回第一次加密的verifyHash
