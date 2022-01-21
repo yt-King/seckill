@@ -1,11 +1,5 @@
 package com.yt.seckill.shiro;
 
-/**
- * @author 应涛
- * @date 2022/1/18
- * @function：
- */
-
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yt.seckill.entity.SysUser;
@@ -28,11 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Shiro自定义auth过滤器
- *
- * @Author 大誌
- * @Date 2019/3/31 10:38
- * @Version 1.0
+ * @author 应涛
+ * @date 2022/1/18
+ * @function：
  */
 @Component
 public class AuthFilter extends AuthenticatingFilter {
