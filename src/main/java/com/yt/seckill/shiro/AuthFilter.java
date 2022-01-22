@@ -29,9 +29,6 @@ import java.util.Map;
 @Component
 public class AuthFilter extends AuthenticatingFilter {
 
-    // 定义jackson对象
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-
     /**
      * 生成自定义token
      *
@@ -49,7 +46,7 @@ public class AuthFilter extends AuthenticatingFilter {
     }
 
     /**
-     * 步骤1.所有请求全部拒绝访问
+     * 1.所有请求全部拒绝访问
      *
      * @param request
      * @param response
@@ -77,11 +74,12 @@ public class AuthFilter extends AuthenticatingFilter {
         //获取请求token，如果token不存在，直接返回
         String token = TokenUtil.getRequestToken((HttpServletRequest) request);
         if (StringUtils.isBlank(token)) {
-            RuntimeException runtimeException = new RuntimeException("token不存在");
-            // 异常捕获，发送到expiredJwtException
-            request.setAttribute("errMsg", runtimeException);
-            //将异常分发到/filterException控制器
-            request.getRequestDispatcher("/filterException").forward(request, response);
+//            RuntimeException runtimeException = new RuntimeException("token不存在");
+//            // 异常捕获，发送到expiredJwtException
+//            request.setAttribute("errMsg", runtimeException);
+//            //将异常分发到/filterException控制器
+            //直接把请求转发到对应controller返回自定义错误信息
+            request.getRequestDispatcher("/filterExceptionOnAccessDenied").forward(request, response);
             return false;
         }
         return executeLogin(request, response);
@@ -95,11 +93,12 @@ public class AuthFilter extends AuthenticatingFilter {
     @Override
     protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException e,
                                      ServletRequest request, ServletResponse response) {
-        RuntimeException runtimeException = new RuntimeException("登陆状态已失效，请重新登录");
-        // 异常捕获，发送到expiredJwtException
-        request.setAttribute("errMsg", runtimeException);
-        //将异常分发到/filterException控制器
-        request.getRequestDispatcher("/filterException").forward(request, response);
+//        RuntimeException runtimeException = new RuntimeException("登陆状态已失效，请重新登录");
+//        // 异常捕获，发送到expiredJwtException
+//        request.setAttribute("errMsg", runtimeException);
+//        //将异常分发到/filterException控制器
+        //直接把请求转发到对应controller返回自定义错误信息
+        request.getRequestDispatcher("/filterExceptionOnLoginFailure").forward(request, response);
         return false;
     }
 

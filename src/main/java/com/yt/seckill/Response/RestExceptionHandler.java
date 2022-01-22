@@ -22,7 +22,7 @@ public class RestExceptionHandler {
      */
     @ExceptionHandler
     public ResultData<String> ErrorHandler(AuthorizationException e) {
-        return ResultData.fail(ReturnCode.RC500.getCode(),"您暂时没有权限,请联系管理员！");
+        return ResultData.fail(ReturnCode.ACCESS_DENIED.getCode(),ReturnCode.ACCESS_DENIED.getMessage());
     }
     /**
      * 默认全局异常处理。

@@ -32,7 +32,7 @@ public class TSeckillGoodsController {
 
     @PostMapping(value = "/gethash")
     @Operation(summary = "获取验证值")
-//    @RequiresPermissions("exportUserInfo") //权限申明
+    @RequiresPermissions("resetPassword") //权限申明
     public String getVerifyHash(@RequestBody ParamTempDto paramTempDto, HttpServletRequest request) throws Exception {
         //判断是否禁止访问
         sysUserService.CheckIpIsBanned(request);
