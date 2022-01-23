@@ -1,13 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yt.seckill.mapper.TGoodsMapper">
+    <sql id="Pagination">
+        LIMIT
+        #{pageNum,jdbcType=INTEGER},
+        #{pageSize,jdbcType=INTEGER}
+    </sql>
+    <sql id="Condition">
+        <where>
+            is_delete=0
+            <if test="name != null">
+                AND name LIKE CONCAT('%',#{name},'%')
+            </if>
+        </where>
+    </sql>
+    <sql id="ConditionAll">
+        <where>
+            is_delete=0
+            AND (1=2
+            <if test="keyWord != null">
+                OR goods_name LIKE CONCAT('%',#{keyWord},'%')
+            </if>
+            <if test="keyWord != null">
+                OR goods_title LIKE CONCAT('%',#{keyWord},'%')
+            </if>
+            <if test="keyWord != null">
+                OR goods_detail LIKE CONCAT('%',#{keyWord},'%')
+            </if>)
+        </where>
+    </sql>
+    <select id="selectCount" resultType="int" parameterType="Map">
+        select count(*) from t_goods t
+        <include refid="Condition"/>
+    </select>
     <select id="checktime" resultType="Integer">
+        SELECT COUNT(goods_name)
+        FROM t_goods
+        WHERE goods_start <![CDATA[<= ]]> #{time}
+          AND goods_end <![CDATA[>= ]]>  #{time}
+          AND data_id = #{dataId}
+          AND is_delete = 0
+    </select>
+    <select id="selectByCondition" resultType="com.yt.seckill.entity.TGoods">
         SELECT
-        COUNT(goods_name)
+        *
         FROM
         t_goods
-        WHERE
-        goods_start <![CDATA[<= ]]> #{time} AND goods_end <![CDATA[>= ]]>  #{time}
-          AND data_id =  #{dataId}  AND is_delete = 0
+        <include refid="ConditionAll"/>
+        <include refid="Pagination"/>
     </select>
 </mapper>

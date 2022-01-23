@@ -49,7 +49,7 @@ public class SysUserController {
         return sysUserService.insertUser(entity);
     }
 
-    @RequestMapping("/login")
+    @PostMapping("/login")
     @Operation(summary = "用户登录")
     public Map login(@RequestBody @Valid ParamUserDto entity, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
 //        //添加用户认证信息

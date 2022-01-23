@@ -1,5 +1,5 @@
 # seckill
-银行秒杀系统开发记录
+银行秒杀系统开发记录,具体的开发流程同步分享到了掘金专栏-->https://juejin.cn/column/7054419593372106789
 ## 2021-11-29（登录功能）
 
 完成了秒杀系统登录功能，采用AOP监控登陆状态（LonginAspect）,使用Validation API进行参数校验，通过自定义切面实现监控，但是要注意去掉秒杀部分的监控，在秒杀的那一小段时间里去除所有不必要的开销
@@ -224,3 +224,49 @@ RedisTemplate ipCountRedisTemplate;//专门用于统计IP访问次数的redis
     }
 ```
 
+## 2022-1-23(新增商品的crud)
+
+对商品进行了crud接口的编写，商品改变的同时要对秒杀商品表也做对应的改变，在增删改的方法上面加个事务@Transactional(rollbackFor = Exception.class)，查询列表的时候做了分页处理和根据关键字查询，根据关键字匹配：
+
+```xml
+<sql id="ConditionAll">
+    <where>
+        is_delete=0
+        AND (1=2
+        <if test="keyWord != null">
+            OR goods_name LIKE CONCAT('%',#{keyWord},'%')
+        </if>
+        <if test="keyWord != null">
+            OR goods_title LIKE CONCAT('%',#{keyWord},'%')
+        </if>
+        <if test="keyWord != null">
+            OR goods_detail LIKE CONCAT('%',#{keyWord},'%')
+        </if>)
+    </where>
+</sql>
+```
+
+分页查询：
+
+```xml
+<sql id="Pagination">
+    LIMIT
+    #{pageNum,jdbcType=INTEGER},
+    #{pageSize,jdbcType=INTEGER}
+</sql>
+```
+
+分页的时候写了个工具类先判断一下有没有传第一条记录位置和页面大小过来，没有的话默认第一页的前十条
+
+```java
+ public static void checkPage(Map params) {
+     if(null==params.get("pageNum"))
+     params.put("pageNum",0);
+     if(null==params.get("pageSize"))
+     params.put("pageSize",10);
+ }
+```
+
+返回结果如下
+
+![image-20220123225740227](README.images/image-20220123225740227.png)

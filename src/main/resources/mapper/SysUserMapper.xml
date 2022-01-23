@@ -18,12 +18,12 @@
         FROM sys_user AS user,
 			 sys_role AS role,
 			 sys_permissions AS per,
-			 t_role_permiss,
-			 t_user_role
+			 rel_role_permiss,
+			 rel_user_role
         WHERE user.user_id=#{userId}
-          AND user.user_id=t_user_role.userId
-          AND t_user_role.roleId=role.roleId
-          AND t_role_permiss.roleId=role.roleId
-          AND t_role_permiss.perId=per.perId
+          AND user.user_id=rel_user_role.userId
+          AND rel_user_role.roleId=role.roleId
+          AND rel_role_permiss.roleId=role.roleId
+          AND rel_role_permiss.perId=per.perId
     </select>
 </mapper>

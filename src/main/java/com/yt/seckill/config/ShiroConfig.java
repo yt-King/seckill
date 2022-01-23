@@ -64,7 +64,7 @@ public class ShiroConfig {
         filterMap.put("/v3/api-docs", "anon");
         filterMap.put("/swagger-ui/**", "anon");
         filterMap.put("/swagger-resources/**", "anon");
-        filterMap.put("/**", "auth");
+        filterMap.put("/**", "anon");
 
         //登录
 //        shiroFilterFactoryBean.setLoginUrl("/sysuser/login");

@@ -44,7 +44,7 @@ public class UserRealm extends AuthorizingRealm {
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
 
         List<Map<String, Object>> powerList = sysUserService.getUserPower(sysUser.getUserId());
-        System.out.println(powerList.toString());
+//        System.out.println(powerList.toString());
         for (Map<String, Object> powerMap : powerList) {
             //添加角色
             simpleAuthorizationInfo.addRole(String.valueOf(powerMap.get("roleName")));
