@@ -143,10 +143,10 @@ public class SysUser implements Serializable {
     private Boolean isDelete;
 
     /**
-     * 是否管理员，0:否，1:是
+     * 是否活跃，0:否，1:是
      */
     @Schema(hidden = true)
-    private Boolean isLeader;
+    private Boolean isActivity;
 
     /**
      * 创建记录时间

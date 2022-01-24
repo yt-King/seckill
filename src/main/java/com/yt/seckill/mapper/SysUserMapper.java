@@ -2,6 +2,7 @@ package com.yt.seckill.mapper;
 
 import com.yt.seckill.entity.SysUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.yt.seckill.entity.TGoods;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -25,4 +26,8 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     int selectByTel(String tel);
     //根据电话号码查询实体信息
     SysUser selectAllByTel(String tel);
+    //用户列表查询
+    List<TGoods> selectByCondition(Map params);
+    //count
+    int selectCount(Map params);
 }

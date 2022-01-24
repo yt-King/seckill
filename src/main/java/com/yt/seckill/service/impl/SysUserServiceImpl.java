@@ -1,9 +1,12 @@
 package com.yt.seckill.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.yt.seckill.entity.Dto.ParamUserDto;
 import com.yt.seckill.entity.Enum.CacheKey;
 import com.yt.seckill.entity.SysUser;
+import com.yt.seckill.entity.TGoods;
 import com.yt.seckill.mapper.SysUserMapper;
 import com.yt.seckill.service.ISysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +48,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     int ALLOW_COUNT; //接口允许访问最大次数
 
     public List<Map<String, Object>> getUserPower(String userId) {
-       return sysUserMapper.getUserPower(userId);
+        return sysUserMapper.getUserPower(userId);
     }
 
     /**
@@ -87,11 +91,89 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (!MD5Utils.passwordIsTrue(entity.getPassWord(), sysUser.getPassWord()))
             throw new RuntimeException("账号或密码错误");
         //生成token——日期加用户id再进行MD5加密
-        String token = string2MD5(TimeUtils.getCuitPreTime()+sysUser.getUserId());
+        String token = string2MD5(TimeUtils.getCuitPreTime() + sysUser.getUserId());
         redisTemplate.opsForValue().set(token, sysUser, 60 * 60 * 12, TimeUnit.SECONDS);
         map.put("token", token);
         map.put("msg", "登录成功");
         return map;
+    }
+
+
+    /**
+     * 功能描述:
+     * 分页+查询用户列表
+     *
+     * @param params "pageNum":0,
+     *               "pageSize":1,
+     *               "tel":"",
+     *               "name":""
+     * @return java.util.Map
+     * @author yt
+     * @date 2022/1/24 13:47
+     */
+    public Map selectlist(Map params) {
+        Map map = new HashMap();
+        List<TGoods> list;
+        int count = sysUserMapper.selectCount(params);
+        PageUtils.checkPage(params);
+        list = sysUserMapper.selectByCondition(params);
+        map.put("count", count);
+        map.put("list", list);
+        return map;
+    }
+
+    /**
+     * 功能描述:
+     * 根据user_id更新用户信息
+     *
+     * @param entity
+     * @return java.lang.String
+     * @author yt
+     * @date 2022/1/24 14:00
+     */
+    public String updateOne(SysUser entity) {
+        UpdateWrapper<SysUser> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("user_id", entity.getUserId());
+        if (sysUserMapper.update(entity, updateWrapper) < 1)
+            throw new RuntimeException("更新失败，用户不存在");
+        return "更新成功";
+    }
+
+    /**
+     * 功能描述:
+     * 根据tel查询用户具体信息
+     *
+     * @param userId
+     * @return com.yt.seckill.entity.SysUser
+     * @author yt
+     * @date 2022/1/24 14:01
+     */
+    public SysUser detail(String userId) {
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId);
+        SysUser sysUser = sysUserMapper.selectOne(queryWrapper);
+        if (null == sysUser)
+            throw new RuntimeException("用户不存在");
+        return sysUser;
+    }
+
+    /**
+     * 功能描述:
+     * 用户逻辑删除
+     *
+     * @param userId
+     * @return java.lang.String
+     * @author yt
+     * @date 2022/1/24 14:07
+     */
+    public String deleteUser(String userId) {
+        //只更新一个属性，根据dataid设置isDelte
+        UpdateWrapper<SysUser> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("user_id",userId).set("is_delete", "1");
+        //is_delete置1，进行逻辑删除，判断返回值，=0说明该条记录不存在直接抛出异常
+        if(sysUserMapper.update(null, updateWrapper)<1)
+            throw new RuntimeException("该用户不存在");
+        return "删除成功";
     }
 
     /**

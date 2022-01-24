@@ -16,9 +16,9 @@ import java.util.Map;
  */
 public interface TGoodsMapper extends BaseMapper<TGoods> {
     //判断时间是否在秒杀时间内
-    public int checktime(String dataId,String time);
-    //判断时间是否在秒杀时间内
-    public List<TGoods> selectByCondition(Map params);
+    int checktime(String dataId,String time);
+    //商品列表查询
+    List<TGoods> selectByCondition(Map params);
     //count
-    public int selectCount(Map params);
+    int selectCount(Map params);
 }

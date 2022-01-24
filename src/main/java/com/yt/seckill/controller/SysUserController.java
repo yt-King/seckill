@@ -1,8 +1,10 @@
 package com.yt.seckill.controller;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.yt.seckill.entity.Dto.ParamUserDto;
 import com.yt.seckill.entity.SysUser;
+import com.yt.seckill.entity.TGoods;
 import com.yt.seckill.service.impl.SysUserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,23 +54,32 @@ public class SysUserController {
     @PostMapping("/login")
     @Operation(summary = "用户登录")
     public Map login(@RequestBody @Valid ParamUserDto entity, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
-//        //添加用户认证信息
-//        Subject subject = SecurityUtils.getSubject();
-//        System.out.println("subject.toString() = " + subject.toString());
-//        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(entity.getTel(), string2MD5(entity.getPassWord()));
-//        try {
-//            //进行验证，AuthenticationException可以catch到,但是AuthorizationException因为我们使用注解方式,是catch不到的,所以后面使用全局异常捕抓去获取
-//            subject.login(usernamePasswordToken);
-//        } catch (AuthenticationException e) {
-//            e.printStackTrace();
-//            return "账号或密码错误！";
-//        } catch (AuthorizationException e) {
-//            e.printStackTrace();
-//            return "没有权限";
-//        }
-//        return "login success";
         if (bindingResult.hasErrors())
             throw new RuntimeException(bindingResult.getFieldError().getDefaultMessage());
         return sysUserService.login(entity, request, response);
+    }
+
+    @PostMapping("/list")
+    @Operation(summary = "分页+条件查询用户列表，参数：根据用户名或账号（手机号）查询")
+    public Map list(@RequestBody Map params) {
+        return sysUserService.selectlist(params);
+    }
+
+    @PostMapping("/update")
+    @Operation(summary = "更新操作，根据user_id更新")
+    public String update(@RequestBody SysUser entity) {
+        return sysUserService.updateOne(entity);
+    }
+
+    @PostMapping("/detail")
+    @Operation(summary = "根据tel查询对应用户信息")
+    public SysUser detail(@RequestBody String userId) {
+        return sysUserService.detail((String) JSONObject.parseObject(userId).get("userId"));
+    }
+
+    @PostMapping("/delete")
+    @Operation(summary = "用户删除")
+    public String delete(@RequestBody String userId) {
+        return sysUserService.deleteUser((String) JSONObject.parseObject(userId).get("userId"));
     }
 }
