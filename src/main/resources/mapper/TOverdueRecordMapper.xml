@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yt.seckill.mapper.TOverdueRecordMapper">
+    <sql id="Pagination">
+        LIMIT
+        #{pageNum,jdbcType=INTEGER},
+        #{pageSize,jdbcType=INTEGER}
+    </sql>
+    <sql id="Condition">
+        <where>
+            is_delete=0
+            <if test="overdueId != null">
+                AND overdue_id LIKE CONCAT('%',#{overdueId},'%')
+            </if>
+        </where>
+    </sql>
+    <select id="selectCount" resultType="int" parameterType="Map">
+        select count(*) from t_overdue_record t
+        <include refid="Condition"/>
+    </select>
+    <select id="selectByCondition" resultType="com.yt.seckill.entity.TOverdueRecord">
+        SELECT
+        *
+        FROM
+        t_overdue_record
+        <include refid="Condition"/>
+        <include refid="Pagination"/>
+    </select>
+</mapper>

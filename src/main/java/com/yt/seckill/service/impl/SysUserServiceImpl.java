@@ -113,7 +113,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     public Map selectlist(Map params) {
         Map map = new HashMap();
-        List<TGoods> list;
+        List<SysUser> list;
         int count = sysUserMapper.selectCount(params);
         PageUtils.checkPage(params);
         list = sysUserMapper.selectByCondition(params);

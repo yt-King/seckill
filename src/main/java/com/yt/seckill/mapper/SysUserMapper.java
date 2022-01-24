@@ -27,7 +27,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     //根据电话号码查询实体信息
     SysUser selectAllByTel(String tel);
     //用户列表查询
-    List<TGoods> selectByCondition(Map params);
+    List<SysUser> selectByCondition(Map params);
     //count
     int selectCount(Map params);
 }
