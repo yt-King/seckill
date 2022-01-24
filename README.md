@@ -224,6 +224,16 @@ RedisTemplate ipCountRedisTemplate;//专门用于统计IP访问次数的redis
     }
 ```
 
+## 2022-1-22(完成shiro的整合)
+
+整合shiro进行用户认证和权限管理，具体流程已发布掘金
+
+[springboot整合shiro——前后端分离模式(上篇)](https://juejin.cn/post/7055838835942359076)
+
+[springboot整合shiro——前后端分离模式(下篇)](https://juejin.cn/post/7056265836482265125)
+
+[springboot整合shiro——前后端分离模式(浅析登录流程)](https://juejin.cn/post/7056644981452668965)
+
 ## 2022-1-23(新增商品的crud)
 
 对商品进行了crud接口的编写，商品改变的同时要对秒杀商品表也做对应的改变，在增删改的方法上面加个事务@Transactional(rollbackFor = Exception.class)，查询列表的时候做了分页处理和根据关键字查询，根据关键字匹配：
@@ -270,3 +280,6 @@ RedisTemplate ipCountRedisTemplate;//专门用于统计IP访问次数的redis
 返回结果如下
 
 ![image-20220123225740227](README.images/image-20220123225740227.png)
+
+## 2022-1-24(完成基础功能开发)
+
