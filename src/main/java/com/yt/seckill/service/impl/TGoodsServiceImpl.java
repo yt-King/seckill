@@ -2,9 +2,7 @@ package com.yt.seckill.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.yt.seckill.entity.SysUser;
-import com.yt.seckill.entity.TGoods;
-import com.yt.seckill.entity.TSeckillGoods;
+import com.yt.seckill.entity.*;
 import com.yt.seckill.mapper.TGoodsMapper;
 import com.yt.seckill.mapper.TSeckillGoodsMapper;
 import com.yt.seckill.service.ITGoodsService;
@@ -12,15 +10,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yt.seckill.utils.IdcardUtils;
 import com.yt.seckill.utils.PageUtils;
 import com.yt.seckill.utils.TimeUtils;
+import com.yt.seckill.utils.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 import static com.yt.seckill.utils.MD5Utils.string2MD5;
 
@@ -38,6 +35,16 @@ public class TGoodsServiceImpl extends ServiceImpl<TGoodsMapper, TGoods> impleme
     TGoodsMapper tGoodsMapper;
     @Autowired
     TSeckillGoodsMapper tSeckillGoodsMapper;
+    @Autowired
+    HttpServletRequest request;
+    @Autowired
+    RedisTemplate redisTemplate;
+    @Autowired
+    TGoodsRuleServiceImpl tGoodsRuleService;
+    @Autowired
+    SysUserServiceImpl sysUserService;
+    @Autowired
+    TApplyRecordServiceImpl tApplyRecordService;
 
     /**
      * 功能描述:
@@ -125,7 +132,7 @@ public class TGoodsServiceImpl extends ServiceImpl<TGoodsMapper, TGoods> impleme
 
     /**
      * 功能描述:
-     * 单个商品查询
+     * 单个商品查询，查询前先判断是否有参与活动资格并写入申请记录
      *
      * @param dataId
      * @return com.yt.seckill.entity.TGoods
@@ -138,6 +145,33 @@ public class TGoodsServiceImpl extends ServiceImpl<TGoodsMapper, TGoods> impleme
         TGoods tGoods = tGoodsMapper.selectOne(queryWrapper);
         if(null==tGoods)
             throw new RuntimeException("商品不存在");
+        //查询准入规则，从头里或请求里拿到token得到用户信息
+        String token  = TokenUtil.getRequestToken(request);
+        //根据token获取用户信息
+        if(null==token)
+            throw new RuntimeException("token为空，请重新登录");
+        SysUser sysUser = (SysUser) redisTemplate.opsForValue().get(token);
+        //查询准入规则
+        TGoodsRule tGoodsRule = tGoodsRuleService.detail(dataId);
+        //新增申请记录
+        TApplyRecord tApplyRecord = new TApplyRecord();
+        tApplyRecord.setUserId(sysUser.getUserId());
+        tApplyRecord.setUserName(sysUser.getName());
+        tApplyRecord.setGoodsId(tGoods.getDataId());
+        tApplyRecord.setGoodsName(tGoods.getGoodsName());
+        tApplyRecord.setApplyTime(new Date());
+        //根据用户查询是否有参与活动的资格
+        try {
+            sysUserService.checkUserQualify(sysUser,tGoodsRule);
+        }catch (Exception e){
+            //结果不通过
+            tApplyRecord.setApplyResult(1);
+            tApplyRecordService.insertRecord(tApplyRecord);
+            throw e;
+        }
+        //结果通过
+        tApplyRecord.setApplyResult(0);
+        tApplyRecordService.insertRecord(tApplyRecord);
         return tGoods;
     }
 

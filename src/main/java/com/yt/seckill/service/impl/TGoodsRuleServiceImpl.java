@@ -24,8 +24,8 @@ import org.springframework.stereotype.Service;
 public class TGoodsRuleServiceImpl extends ServiceImpl<TGoodsRuleMapper, TGoodsRule> implements ITGoodsRuleService {
     @Autowired
     TGoodsRuleMapper tGoodsRuleMapper;
-    @Autowired
-    TGoodsServiceImpl tGoodsService;
+//    @Autowired
+//    TGoodsServiceImpl tGoodsService;//循环依赖报错！！
 
     /**
      * 功能描述:
@@ -38,7 +38,7 @@ public class TGoodsRuleServiceImpl extends ServiceImpl<TGoodsRuleMapper, TGoodsR
      */
     public String insertRecord(TGoodsRule entity) {
         //先检查商品id是否存在
-        TGoods tGoods = tGoodsService.detail(entity.getDataId());
+//        TGoods tGoods = tGoodsService.detail(entity.getDataId());
         //将准入规则写入
         tGoodsRuleMapper.insert(entity);
         return "添加成功";

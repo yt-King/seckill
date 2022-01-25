@@ -1,6 +1,7 @@
 package com.yt.seckill.mapper;
 
 import com.yt.seckill.entity.SysUser;
+import com.yt.seckill.entity.TGoodsRule;
 import com.yt.seckill.entity.TOverdueRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -20,4 +21,6 @@ public interface TOverdueRecordMapper extends BaseMapper<TOverdueRecord> {
     List<TOverdueRecord> selectByCondition(Map params);
     //count
     int selectCount(Map params);
+    //查询用户活动规则内逾期次数
+    int checkUserQualify(String tel, TGoodsRule entity);
 }

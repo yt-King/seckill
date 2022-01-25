@@ -30,7 +30,7 @@ import java.util.Map;
 @Tag(name = "t-goods-controller", description = "商品接口")
 public class TGoodsController {
     @Autowired
-    private TGoodsServiceImpl tGoodsService;
+    TGoodsServiceImpl tGoodsService;
 
     @PostMapping("/insert")
     @Operation(summary = "商品新增")

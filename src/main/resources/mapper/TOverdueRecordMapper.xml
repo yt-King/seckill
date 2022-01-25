@@ -26,4 +26,25 @@
         <include refid="Condition"/>
         <include refid="Pagination"/>
     </select>
+    <select id="checkUserQualify" resultType="Integer">
+        SELECT
+        COUNT(*)
+        FROM
+        t_overdue_record
+        <where>
+            is_delete=0 AND overdue_id=#{tel}
+            <if test="entity.limitStartDate != null">
+                AND overdue_date > #{entity.limitStartDate}
+            </if>
+            <if test="entity.limitOverdueNum != null">
+                AND overdue_num > #{entity.limitOverdueNum}
+            </if>
+            <if test="entity.limitOverdueTime != null">
+                AND overdue_time > #{entity.limitOverdueTime}
+            </if>
+            <if test="entity.limitIsBlack != null">
+                AND (is_break &amp; #{entity.limitIsBlack})=1
+            </if>
+        </where>
+    </select>
 </mapper>

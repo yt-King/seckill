@@ -34,13 +34,14 @@ public class TApplyRecordController {
     @Autowired
     TApplyRecordServiceImpl tApplyRecordService;
 
-    @PostMapping("/add")
-    @Operation(summary = "申请记录新增")
-    public String insert(@RequestBody TApplyRecord entity, BindingResult bindingResult) {
-        if (bindingResult.hasErrors())
-            throw new RuntimeException(bindingResult.getFieldError().getDefaultMessage());
-        return tApplyRecordService.insertRecord(entity);
-    }
+    //申请记录在查看商品详情是进行新增
+//    @PostMapping("/add")
+//    @Operation(summary = "申请记录新增")
+//    public String insert(@RequestBody TApplyRecord entity, BindingResult bindingResult) {
+//        if (bindingResult.hasErrors())
+//            throw new RuntimeException(bindingResult.getFieldError().getDefaultMessage());
+//        return tApplyRecordService.insertRecord(entity);
+//    }
 
     @PostMapping("/list")
     @Operation(summary = "分页+条件查询申请记录，参数：根据id查询")

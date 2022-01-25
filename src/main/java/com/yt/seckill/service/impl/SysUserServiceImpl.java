@@ -7,7 +7,9 @@ import com.yt.seckill.entity.Dto.ParamUserDto;
 import com.yt.seckill.entity.Enum.CacheKey;
 import com.yt.seckill.entity.SysUser;
 import com.yt.seckill.entity.TGoods;
+import com.yt.seckill.entity.TGoodsRule;
 import com.yt.seckill.mapper.SysUserMapper;
+import com.yt.seckill.mapper.TOverdueRecordMapper;
 import com.yt.seckill.service.ISysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yt.seckill.utils.*;
@@ -42,6 +44,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     SysUserMapper sysUserMapper;
     @Autowired
     RedisTemplate redisTemplate;
+    @Autowired
+    TOverdueRecordMapper tOverdueRecordMapper;
     @Resource(name = "IpCountRedisTemplate")
     RedisTemplate ipCountRedisTemplate;//专门用于统计IP访问次数的redis
     @Value("${seckill.ALLOW_COUNT}")
@@ -174,6 +178,27 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if(sysUserMapper.update(null, updateWrapper)<1)
             throw new RuntimeException("该用户不存在");
         return "删除成功";
+    }
+
+    /**
+     * 功能描述:
+     * 根据活动配置的准入规则检查用户是否有资格参与活动
+     *
+     * @param sysUser
+     * @param tGoodsRule
+     * @return void
+     * @author yt
+     * @date 2022/1/25 1:14
+     */
+    public void checkUserQualify(SysUser sysUser, TGoodsRule tGoodsRule){
+        if(Integer.parseInt(sysUser.getAge())<tGoodsRule.getLimitAge())//年龄不符合
+            throw new RuntimeException("抱歉您不符合本次活动要求，无法参与");
+        if(1==(Integer.parseInt(sysUser.getStatus())&tGoodsRule.getLimitIsUnemployment()))//失业限制,进行与运算，两者都是1才说明不符合要求
+            throw new RuntimeException("抱歉您不符合本次活动要求，无法参与");
+        if(tOverdueRecordMapper.checkUserQualify(sysUser.getTel(), tGoodsRule)>=tGoodsRule.getLimitOverdueFrequency())
+            //逾期次数超过规定次数
+            throw new RuntimeException("抱歉您不符合本次活动要求，无法参与");
+//        System.out.println("tOverdueRecordMapper.checkUserQualify(sysUser.getTel(),tGoodsRule) = " + tOverdueRecordMapper.checkUserQualify(sysUser.getTel(), tGoodsRule));
     }
 
     /**

@@ -6,6 +6,7 @@ import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -15,14 +16,14 @@ import javax.validation.constraints.NotNull;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author yt
  * @since 2022-01-24
  */
 @Data
-@ApiModel(description= "商品风险引擎实体类")
+@ApiModel(description = "商品风险引擎实体类")
 @EqualsAndHashCode(callSuper = false)
 public class TGoodsRule implements Serializable {
 
@@ -40,6 +41,13 @@ public class TGoodsRule implements Serializable {
      */
     @Schema(name = "limitAge", description = "参与活动的年龄限制", example = "18")
     private Integer limitAge;
+
+    /**
+     * 逾期计算起始时间
+     */
+    @Schema(name = "limitStartDate", description = "逾期计算起始时间", example = "2021-1-1 00:00:00")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date limitStartDate;
 
     /**
      * 逾期时长限制
