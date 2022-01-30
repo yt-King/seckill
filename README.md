@@ -183,45 +183,45 @@ RedisTemplate ipCountRedisTemplate;//专门用于统计IP访问次数的redis
 
 ```java
 /**
-     * 功能描述:
-     * ip访问接口次数加1
-     *
-     * @param request
-     * @return int
-     * @author yt
-     * @date 2022/1/17 18:40
-     */
-    public int addIpCount(HttpServletRequest request) throws Exception {
-        String ipAddress = IpUtil.getIpAddr(request);
-        String limitKey = CacheKey.LIMIT_KEY.getKey() + "_" + ipAddress;
-        String limitNum = (String) ipCountRedisTemplate.opsForValue().get(limitKey);
-        int limit = -1;
-        if (limitNum == null) {
-            ipCountRedisTemplate.opsForValue().set(limitKey, "0", 600, TimeUnit.SECONDS);
-        } else {
-            limit = Integer.parseInt(limitNum) + 1;
-            ipCountRedisTemplate.opsForValue().set(limitKey, String.valueOf(limit), 600, TimeUnit.SECONDS);
-        }
-        return limit;
+* 功能描述:
+* ip访问接口次数加1
+*
+* @param request
+* @return int
+* @author yt
+* @date 2022/1/17 18:40
+*/
+public int addIpCount(HttpServletRequest request) throws Exception {
+    String ipAddress = IpUtil.getIpAddr(request);
+    String limitKey = CacheKey.LIMIT_KEY.getKey() + "_" + ipAddress;
+    String limitNum = (String) ipCountRedisTemplate.opsForValue().get(limitKey);
+    int limit = -1;
+    if (limitNum == null) {
+        ipCountRedisTemplate.opsForValue().set(limitKey, "0", 600, TimeUnit.SECONDS);
+    } else {
+        limit = Integer.parseInt(limitNum) + 1;
+        ipCountRedisTemplate.opsForValue().set(limitKey, String.valueOf(limit), 600, TimeUnit.SECONDS);
     }
+    return limit;
+}
 
-    /**
-     * 功能描述:
-     * 检查IP访问接口次数
-     *
-     * @param request
-     * @return void
-     * @author yt
-     * @date 2022/1/17 18:40
-     */
-    public void CheckIpIsBanned(HttpServletRequest request) {
-        String ipAddress = IpUtil.getIpAddr(request);
-        String limitKey = CacheKey.LIMIT_KEY.getKey() + "_" + ipAddress;
-        String limitNum = (String) ipCountRedisTemplate.opsForValue().get(limitKey);
-        if(null == limitNum) return;
-        if (Integer.parseInt(limitNum) >= ALLOW_COUNT)
-            throw new RuntimeException("禁止频繁访问，请十分钟后再试");
-    }
+/**
+* 功能描述:
+* 检查IP访问接口次数
+*
+* @param request
+* @return void
+* @author yt
+* @date 2022/1/17 18:40
+*/
+public void CheckIpIsBanned(HttpServletRequest request) {
+    String ipAddress = IpUtil.getIpAddr(request);
+    String limitKey = CacheKey.LIMIT_KEY.getKey() + "_" + ipAddress;
+    String limitNum = (String) ipCountRedisTemplate.opsForValue().get(limitKey);
+    if(null == limitNum) return;
+    if (Integer.parseInt(limitNum) >= ALLOW_COUNT)
+        throw new RuntimeException("禁止频繁访问，请十分钟后再试");
+}
 ```
 
 ## 2022-1-22(完成shiro的整合)
@@ -282,4 +282,48 @@ RedisTemplate ipCountRedisTemplate;//专门用于统计IP访问次数的redis
 ![image-20220123225740227](README.images/image-20220123225740227.png)
 
 ## 2022-1-24(完成基础功能开发)
+
+用户，商品，秒杀规则，申请记录，逾期——增删改查
+
+具体联系如下：
+
+商品表和规则表通过data_id关联，上架秒杀商品的时候可以配置他的准入规则，比如失信用户，有几次逾期记录，逾期金额超过多少等等就不可以参加，用户在点击商品详情时会先判断用户的资格，若没有资格则无法进入详情页，无论成功与否都会在申请记录表留下一次申请记录，获取商品详情方法如下
+
+```java
+public TGoods detail(String dataId) {
+        QueryWrapper<TGoods> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("data_id",dataId);
+        TGoods tGoods = tGoodsMapper.selectOne(queryWrapper);
+        if(null==tGoods)
+            throw new RuntimeException("商品不存在");
+        //从头里或请求里拿到token得到用户信息
+        String token  = TokenUtil.getRequestToken(request);
+        //根据token获取用户信息
+        if(null==token)
+            throw new RuntimeException("token为空，请重新登录");
+        SysUser sysUser = (SysUser) redisTemplate.opsForValue().get(token);
+        //查询准入规则
+        TGoodsRule tGoodsRule = tGoodsRuleService.detail(dataId);
+        //新增申请记录
+        TApplyRecord tApplyRecord = new TApplyRecord();
+        tApplyRecord.setUserId(sysUser.getUserId());
+        tApplyRecord.setUserName(sysUser.getName());
+        tApplyRecord.setGoodsId(tGoods.getDataId());
+        tApplyRecord.setGoodsName(tGoods.getGoodsName());
+        tApplyRecord.setApplyTime(new Date());
+        //根据用户查询是否有参与活动的资格
+        try {
+            sysUserService.checkUserQualify(sysUser,tGoodsRule);
+        }catch (Exception e){
+            //结果不通过
+            tApplyRecord.setApplyResult(1);
+            tApplyRecordService.insertRecord(tApplyRecord);
+            throw e;
+        }
+        //结果通过
+        tApplyRecord.setApplyResult(0);
+        tApplyRecordService.insertRecord(tApplyRecord);
+        return tGoods;
+    }
+```
 
