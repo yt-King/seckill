@@ -8,6 +8,7 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
+@EnableSwagger2
 @MapperScan("com.yt.seckill.mapper")
 public class SeckillApplication {
 
