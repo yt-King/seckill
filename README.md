@@ -327,3 +327,5 @@ public TGoods detail(String dataId) {
     }
 ```
 
+## 2022-3-5(数据库缓存一致性研究)
+
