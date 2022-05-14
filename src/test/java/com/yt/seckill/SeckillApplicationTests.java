@@ -22,17 +22,6 @@ class SeckillApplicationTests {
         System.out.println(result);
         System.out.println(result1);
     }
-//    @Test
-//    void contextLoads() {
-//        String idcard = "330227200195111356";
-//        System.out.println(IdcardUtils.getAgeByIdCard(idcard));
-//        System.out.println(IdcardUtils.getBirthByIdCard(idcard));
-//        System.out.println(IdcardUtils.getDateByIdCard(idcard));
-//        System.out.println(IdcardUtils.getGenderByIdCard(idcard));
-//        System.out.println(IdcardUtils.getMonthByIdCard(idcard));
-//        System.out.println(IdcardUtils.getYearByIdCard(idcard));
-//        System.out.println(IdcardUtils.validateIdCard18(idcard));
-//
-//    }
+
 
 }
